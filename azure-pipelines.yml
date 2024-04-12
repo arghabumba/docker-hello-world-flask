@@ -53,6 +53,28 @@ stages:
        dockerfile: '$(dockerfilePath)'
        tags: '$(prefix)-$(BuildID)'
 
+- stage: Deploy
+  displayName: Deploy to App Service
+  dependsOn: Build
+  jobs:
+    - job: Deploy
+      displayName: Deploy
+      steps:
+        - task: AzureCLI@2
+          inputs:
+            azureSubscription: ServiceConnection_Manual
+            scriptType: 'bash'
+            scriptLocation: 'inlineScript'
+            inlineScript: |
+              # Azure CLI commands to log in, configure ACR login, and deploy image
+              
+
+              az acr login --name '$(dockerRegistryName)' --username '$(dockerRegistryName)' --password '$(dockerRegistryServiceConnection)'
+              
+              az webapp config container set --name '$(Webap)' --resource-group '$(Resource_group)' --docker-custom-image-name '$(dockerRegistryName)'/'$(Webap)':'$(prefix)' --docker-registry-server-url https://'$(dockerRegistryName)'.azurecr.io
+              # Restart the App Service
+              az webapp restart --ids $/subscriptions/e55321d2-e142-42d7-ae35-c2257f7aabc1/resourceGroups/'$(Resource_group)'/providers/Microsoft.Web/sites/'$(Webap)'
+              arguments: 'some_variable'
 
 
 
