@@ -6,9 +6,11 @@
 trigger:
   branches:
     include:
-      - $(branchName)
+    - main
+pr:
+  branches:
     exclude:
-      - '*'
+    - '*' 
 
 
   
